@@ -15,7 +15,7 @@ readme = "README.md"
 license = "MIT"
 
 requires-python = ">=3.10,<4.0"
-dynamic = ["version"]
+version = "0.2.25"
 
 # https://pypi.org/classifiers/
 # Adjust as needed:
@@ -49,6 +49,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=9.0.2",
+    "pytest-cov>=4.1",
     "pytest-sugar>=1.1.1",
     "ruff>=0.15.1",
     "codespell>=2.4.1",
@@ -57,25 +58,9 @@ dev = [
     "funlog>=0.2.1",
 ]
 
-# ---- Build system ----
-
-# Dynamic versioning from:
-# https://github.com/ninoseki/uv-dynamic-versioning/
-
 [build-system]
-requires = ["hatchling", "uv-dynamic-versioning"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
-
-[tool.hatch.version]
-source = "uv-dynamic-versioning"
-# Note JSON schemas don't seem to be right for tool.hatch.version.source so
-# this may cause false warnings in IDEs.
-# https://github.com/ninoseki/uv-dynamic-versioning/issues/21
-
-[tool.uv-dynamic-versioning]
-vcs = "git"
-style = "pep440"
-bump = true
 
 [tool.hatch.build.targets.wheel]
 # The source location for the package.
@@ -83,7 +68,13 @@ packages = ["src/strif"]
 
 [tool.hatch.build.targets.sdist]
 # Keep agent/tooling state out of the published source distribution.
+include = ["uv.lock"]
 exclude = [".claude", ".tbd", ".github", ".copier-answers.yml", "attic"]
+
+[tool.release]
+fail_on_type_errors = true
+fail_on_coverage = true
+coverage_min_percent = 80
 
 
 # ---- Settings ----

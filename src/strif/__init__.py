@@ -1,5 +1,3 @@
-from importlib.metadata import PackageNotFoundError, version
-
 __all__ = (  # noqa: F405
     "__version__",
     # atomic_var.py
@@ -47,11 +45,7 @@ __all__ = (  # noqa: F405
     "StringTemplate",
 )
 
-try:
-    __version__ = version("strif")
-except PackageNotFoundError:
-    # Running from a source tree that isn't installed.
-    __version__ = "0.0.0.dev0"
+__version__ = "0.2.25"
 
 from .atomic_var import *  # noqa: F403, E402
 from .strif import *  # noqa: F403, E402

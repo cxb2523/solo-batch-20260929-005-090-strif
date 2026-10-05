@@ -1,3 +1,4 @@
+import argparse
 import subprocess
 
 from funlog import log_calls
@@ -13,13 +14,27 @@ reconfigure(emoji=not get_console().options.legacy_windows)  # No emojis on lega
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--check", action="store_true", help="report issues without modifying files"
+    )
+    parser.add_argument("--skip-types", action="store_true", help="skip basedpyright")
+    args = parser.parse_args()
+
     rprint()
 
     errcount = 0
-    errcount += run(["codespell", "--write-changes", *SRC_PATHS, *DOC_PATHS])
-    errcount += run(["ruff", "check", "--fix", *SRC_PATHS])
-    errcount += run(["ruff", "format", *SRC_PATHS])
-    errcount += run(["basedpyright", "--stats", *SRC_PATHS])
+    if args.check:
+        errcount += run(["codespell", *SRC_PATHS, *DOC_PATHS])
+        errcount += run(["ruff", "check", "--no-cache", *SRC_PATHS])
+        errcount += run(["ruff", "format", "--check", "--no-cache", *SRC_PATHS])
+    else:
+        errcount += run(["codespell", "--write-changes", *SRC_PATHS, *DOC_PATHS])
+        errcount += run(["ruff", "check", "--fix", *SRC_PATHS])
+        errcount += run(["ruff", "format", *SRC_PATHS])
+
+    if not args.skip_types:
+        errcount += run(["basedpyright", "--stats", *SRC_PATHS])
 
     rprint()
 

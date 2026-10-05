@@ -91,6 +91,13 @@ Follow this checklist for each new release.
    make test
    ```
 
+   Or run the full release gate (versions, lint, types, tests, coverage, and a
+   dry-run build) in one shot:
+
+   ```shell
+   make release-check
+   ```
+
 3. **Confirm CI is passing:**
 
    ```shell

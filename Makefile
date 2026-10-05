@@ -4,7 +4,7 @@
 
 .DEFAULT_GOAL := default
 
-.PHONY: default install lint test upgrade build clean
+.PHONY: default install lint test typecheck release-check upgrade build clean
 
 default: install lint test 
 
@@ -16,6 +16,12 @@ lint:
 
 test:
 	uv run pytest
+
+typecheck:
+	uv run basedpyright --stats src tests devtools
+
+release-check:
+	uv run --no-sync python devtools/release.py
 
 upgrade:
 	uv sync --upgrade --all-extras --dev

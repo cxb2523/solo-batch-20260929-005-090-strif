@@ -82,6 +82,35 @@ extensions:
 
 See [publishing.md](publishing.md) for instructions on publishing to PyPI.
 
+## Release Checks
+
+`make release-check` runs the reentrant release state machine in
+`devtools/release.py`. It is the single entry point for version resolution:
+an explicit `--version` argument wins, otherwise the git tag on `HEAD` (with
+any `v` prefix stripped) is used, otherwise a local version carrying the commit
+short hash (e.g. `0.2.25+g1a2b3c4`).
+
+The check verifies that `pyproject.toml`'s `project.version`,
+`src/strif/__init__.py`'s `__version__`, and the `strif` version recorded in
+`uv.lock` are all equal, that any git tag matches, and that the working tree
+has no uncommitted changes. It then runs the lint, type-check, and
+test/coverage gates, prints a summary table (including sha256 of the built
+sdist/wheel), and exits non-zero if anything fails. The sdist/wheel are only
+written to `dist/` once every blocking gate passes; a failed run leaves no
+`dist/` behind, and re-running with the same inputs reuses existing artifacts
+instead of rebuilding.
+
+The script only reports problems; it never rewrites project files. Gate
+strictness is configured in `pyproject.toml` under `[tool.release]` (all
+default to blocking):
+
+```toml
+[tool.release]
+fail_on_type_errors = true   # basedpyright errors block the release
+fail_on_coverage = true      # low coverage blocks the release
+coverage_min_percent = 80    # coverage threshold
+```
+
 ## Documentation
 
 - [uv docs](https://docs.astral.sh/uv/)
